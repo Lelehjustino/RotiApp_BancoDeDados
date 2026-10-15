@@ -61,7 +61,7 @@ Substitua `URL_DO_REPOSITORIO` pelo endereço HTTPS do repositório no GitHub.
 
 ## Documentação
 
-[Visualizar a documentação e o progresso do projeto](https://docs.google.com/presentation/d/1mJGpCOkL4Ml6ntdr6JviR-vTJbXRlhazem6Y5Pq6kDA/edit?hl=pt-BR&slide=id.h42b499eac98e7b93_0_62#slide=id.h42b499eac98e7b93_0_62)
+[Visualizar a documentação e o progresso do projeto](https://docs.google.com/presentation/d/1iY6JRYjjSx3Rd6ML8kH7899-WqSeXBDa_Q5x_Lc1g-s/edit?hl=pt-BR&slide=id.h3a2c9153f717c9d4_0_3#slide=id.h3a2c9153f717c9d4_0_3)
 
 ## Contexto acadêmico
 
