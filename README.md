@@ -65,7 +65,7 @@ Substitua `URL_DO_REPOSITORIO` pelo endereço HTTPS do repositório no GitHub.
 
 ## Contexto acadêmico
 
-**Trabalho 2 — MAF (Mínimo Aplicativo Funcional)**
+**Trabalho 3 — MAF (Mínimo Aplicativo Funcional)**
 
 Disciplina: Desenvolvimento de Aplicativos Android
 
