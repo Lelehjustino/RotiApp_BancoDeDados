@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myapplication.ui.theme.listaRotinas
 import com.example.myapplication.ui.theme.registrarRotinaNoHistorico
 
 
@@ -383,6 +384,7 @@ fun TelaCriacao(
 
                     if (nomeRotina.isBlank()) {
 
+
                         Toast.makeText(
                             contexto,
                             "Dê um nome à rotina",
@@ -405,6 +407,9 @@ fun TelaCriacao(
                             registrarRotinaNoHistorico(
                                 rotina.nomeRotina
                             )
+
+                            listaRotinas.add(rotina)
+                            BancoDadosProvider.db.rotinaDAO().inserir(rotina)
 
                             navController.popBackStack()
                         }

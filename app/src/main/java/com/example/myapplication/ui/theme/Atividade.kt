@@ -1,18 +1,20 @@
 
 package com.example.myapplication.ui.theme
 
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
 import androidx.compose.runtime.mutableStateListOf
 
+@Entity(tableName = "atividades")
 data class Atividade(
-    var idAtividade: Int = 0,
-    var idRotina: Int = 0,
-    var nomeAtividade: String = "",
-    var duracaoMinutos: Double = 0.0
+    @PrimaryKey
+    val idAtividade: Int,
+    val idRotina: Int,
+    val nomeAtividade: String,
+    val duracaoMinutos: Double
 )
 
-// Lista global e REATIVA de atividades
 val listaAtividades = mutableStateListOf<Atividade>()
-
 fun calcularXp(): Int {
     return listaAtividades.sumOf {
         it.duracaoMinutos.toInt()

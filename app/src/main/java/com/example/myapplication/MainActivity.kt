@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.example.myapplication.ui.theme.carregarDadosSalvos
 
 class MainActivity : ComponentActivity() {
 
@@ -13,6 +14,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+        BancoDadosProvider.inicializar(this)
+        carregarDadosSalvos()
 
         setContent {
             MyApplicationTheme {
