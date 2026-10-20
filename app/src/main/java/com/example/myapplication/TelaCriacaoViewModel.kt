@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.ui.theme.Atividade
 import com.example.myapplication.ui.theme.Rotina
+import com.example.myapplication.ui.theme.listaAtividades
 import com.example.myapplication.ui.theme.listaAtividades as listaAtividadesGlobal
 import com.example.myapplication.ui.theme.listaRotinas as listaRotinasGlobal
 
@@ -84,11 +85,18 @@ class TelaCriacaoViewModel : ViewModel() {
             atividades.maxOf { it.idAtividade } + 1
         }
 
+        val novoIdRotina = proximoIdRotina()
+
         val novaAtividade = Atividade(
             idAtividade = novoId,
+            idRotina = novoIdRotina, // ID da rotina atual
             nomeAtividade = nomeAtividade.value,
             duracaoMinutos = duracao
         )
+
+        listaAtividades.add(novaAtividade)
+
+        BancoDadosProvider.db.atividadeDAO().inserir(novaAtividade)
 
         atividades.add(novaAtividade)
 
