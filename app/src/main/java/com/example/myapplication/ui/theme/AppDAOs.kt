@@ -5,7 +5,9 @@ import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.Update
 import androidx.room3.Delete
+import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
+import androidx.room3.Upsert
 import com.example.myapplication.ui.theme.*
 
 @Dao
@@ -46,14 +48,12 @@ interface AtividadeDAO {
 
 @Dao
 interface PerfilDAO {
-    @Query("SELECT * FROM perfil WHERE id = 1")
-    fun buscar(): Perfil?
 
-    @Insert
-    fun inserir(perfil: Perfil)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun salvarPerfil(perfil: Perfil)
 
-    @Update
-    fun atualizar(perfil: Perfil)
+    @Query("SELECT * FROM perfil WHERE id = 1 LIMIT 1")
+    suspend fun buscarPerfil(): Perfil?
 }
 
 @Dao
@@ -82,3 +82,5 @@ interface MetaDAO {
     @Delete
     fun excluir(meta: Meta)
 }
+
+

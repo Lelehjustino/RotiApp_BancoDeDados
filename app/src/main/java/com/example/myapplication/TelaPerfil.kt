@@ -44,6 +44,8 @@ fun TelaPerfil(
 
     val perfil by viewModel.perfil
 
+    val carregando by viewModel.carregando
+
     val begeFundo = Color(0xFFF3EFE0)
     val verde = Color(0xFF388E3C)
     val verdeClaro = Color(0xFF7D8C7A)
@@ -96,7 +98,13 @@ fun TelaPerfil(
         // USUÁRIO SEM CADASTRO
         // =========================================
 
-        if (!viewModel.possuiCadastro()) {
+        if (carregando) {
+            androidx.compose.material3.CircularProgressIndicator(
+                color = verde
+            )
+        } else if (!viewModel.possuiCadastro()) {
+            // Mantenha aqui seu conteúdo atual
+            // para quem ainda não possui cadastro.
 
             Text(
                 text = "Ainda não possui um cadastro?",
