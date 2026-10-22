@@ -15,7 +15,7 @@ import com.example.myapplication.ui.theme.*
         Historico::class,
         Meta::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDataBase : RoomDatabase() {

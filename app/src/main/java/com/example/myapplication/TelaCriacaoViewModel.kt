@@ -1,10 +1,16 @@
 package com.example.myapplication
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.ui.theme.Atividade
 import com.example.myapplication.ui.theme.Rotina
 import com.example.myapplication.ui.theme.listaAtividades
+import com.example.myapplication.ui.theme.listaRotinas
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.example.myapplication.ui.theme.listaAtividades as listaAtividadesGlobal
 import com.example.myapplication.ui.theme.listaRotinas as listaRotinasGlobal
 
@@ -239,4 +245,34 @@ class TelaCriacaoViewModel : ViewModel() {
             }
         )
     }
+
+    fun excluirRotina(idRotina: Int) {
+        viewModelScope.launch {
+            try {
+                excluirRotinaDoBanco(idRotina)
+            } catch (e: Exception) {
+                Log.e("RotiApp", "Erro ao excluir rotina", e)
+            }
+        }
+    }
+
+    suspend fun excluirRotinaDoBanco(idRotina: Int) {
+        withContext(Dispatchers.IO) {
+            val db = BancoDadosProvider.db
+
+            db.atividadeDAO().excluirPorRotina(idRotina)
+
+            val rotina = db.rotinaDAO()
+                .buscarTodas()
+                .find { it.idRotina == idRotina }
+
+            if (rotina != null) {
+                db.rotinaDAO().excluir(rotina)
+            }
+        }
+
+        listaAtividades.removeAll { it.idRotina == idRotina }
+        listaRotinas.removeAll { it.idRotina == idRotina }
+    }
+
 }

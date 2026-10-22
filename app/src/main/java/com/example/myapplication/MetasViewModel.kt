@@ -1,132 +1,164 @@
 
 package com.example.myapplication
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.ui.theme.Meta
 import com.example.myapplication.ui.theme.listaMetas
 import com.example.myapplication.ui.theme.registrarMetaNoHistorico
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MetasViewModel : ViewModel() {
 
-    // Lista compartilhada pelo aplicativo
+    // Lista reativa utilizada pela tela
     val metas = listaMetas
 
-
-    // ==========================================
-    // PRÓXIMO ID
-    // ==========================================
-
-    private fun proximoId(): Int {
-
-        if (metas.isEmpty()) {
-            return 1
-        }
-
-        return metas.maxOf {
-            it.idMeta
-        } + 1
+    init {
+        carregarMetas()
     }
 
+    // Carrega as metas do banco
+    fun carregarMetas() {
+        viewModelScope.launch {
+            try {
+                val resultado = withContext(Dispatchers.IO) {
+                    BancoDadosProvider.db
+                        .metaDAO()
+                        .buscarTodas()
+                }
 
-    // ==========================================
-    // ADICIONAR META
-    // ==========================================
+                metas.clear()
+                metas.addAll(resultado)
 
-    fun adicionarMeta(
-        nome: String,
-        descricao: String
-    ) {
-
-        if (nome.isBlank()) {
-            return
+            } catch (e: Exception) {
+                Log.e("MetasViewModel", "Erro ao carregar metas", e)
+            }
         }
-
-        val novaMeta = Meta(
-            idMeta = proximoId(),
-            nomeMeta = nome.trim(),
-            descricaoMeta = descricao.trim(),
-            concluida = false
-        )
-
-        metas.add(novaMeta)
     }
 
+    // Adiciona uma meta e recebe o ID gerado pelo Room
 
-    // ==========================================
-    // CONCLUIR / DESMARCAR META
-    // ==========================================
+    fun adicionarMeta(nome: String, descricao: String) {
+        if (nome.isBlank()) return
 
-    fun alternarMeta(meta: Meta) {
-
-        val indice = metas.indexOfFirst {
-            it.idMeta == meta.idMeta
-        }
-
-        if (indice != -1) {
-
-            val metaAtual = metas[indice]
-
-            val novaConclusao = !metaAtual.concluida
-
-            metas[indice] = metaAtual.copy(
-                concluida = novaConclusao
-            )
-
-            // Só registra no histórico quando CONCLUI
-            if (novaConclusao) {
-                registrarMetaNoHistorico(
-                    metaAtual.nomeMeta
+        viewModelScope.launch {
+            try {
+                val meta = Meta(
+                    nomeMeta = nome.trim(),
+                    descricaoMeta = descricao.trim(),
+                    concluida = false
                 )
+
+                withContext(Dispatchers.IO) {
+                    BancoDadosProvider.db
+                        .metaDAO()
+                        .inserir(meta)
+                }
+
+                carregarMetas()
+
+            } catch (e: Exception) {
+                Log.e("MetasViewModel", "Erro ao adicionar meta", e)
             }
         }
     }
 
 
+    // Marca ou desmarca uma meta
+    fun alternarMeta(meta: Meta) {
+        viewModelScope.launch {
+            try {
+                val atualizada = meta.copy(
+                    concluida = !meta.concluida
+                )
 
-    // ==========================================
-    // EXCLUIR META
-    // ==========================================
+                withContext(Dispatchers.IO) {
+                    BancoDadosProvider.db
+                        .metaDAO()
+                        .atualizar(atualizada)
+                }
 
+                val indice = metas.indexOfFirst {
+                    it.idMeta == meta.idMeta
+                }
+
+                if (indice != -1) {
+                    metas[indice] = atualizada
+                }
+
+                if (atualizada.concluida) {
+                    registrarMetaNoHistorico(
+                        atualizada.nomeMeta
+                    )
+                }
+
+            } catch (e: Exception) {
+                Log.e("MetasViewModel", "Erro ao atualizar meta", e)
+            }
+        }
+    }
+
+    // Exclui a meta do banco e da lista
     fun removerMeta(meta: Meta) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    BancoDadosProvider.db
+                        .metaDAO()
+                        .excluir(meta)
+                }
 
-        metas.removeAll {
-            it.idMeta == meta.idMeta
+                metas.removeAll {
+                    it.idMeta == meta.idMeta
+                }
+
+            } catch (e: Exception) {
+                Log.e("MetasViewModel", "Erro ao excluir meta", e)
+            }
         }
     }
 
-
-    // ==========================================
-    // BUSCAR UMA META
-    // ==========================================
-
-    fun buscarMeta(idMeta: Int): Meta? {
-
-        return metas.find {
-            it.idMeta == idMeta
-        }
-    }
-
-
-    // ==========================================
-    // ATUALIZAR META
-    // ==========================================
-
+    // Atualiza o nome e a descrição de uma meta
     fun atualizarMeta(
         idMeta: Int,
         nome: String,
         descricao: String
     ) {
+        if (nome.isBlank()) return
 
-        val indice = metas.indexOfFirst {
-            it.idMeta == idMeta
+        viewModelScope.launch {
+            try {
+                val indice = metas.indexOfFirst {
+                    it.idMeta == idMeta
+                }
+
+                if (indice == -1) return@launch
+
+                val atualizada = metas[indice].copy(
+                    nomeMeta = nome.trim(),
+                    descricaoMeta = descricao.trim()
+                )
+
+                withContext(Dispatchers.IO) {
+                    BancoDadosProvider.db
+                        .metaDAO()
+                        .atualizar(atualizada)
+                }
+
+                metas[indice] = atualizada
+
+            } catch (e: Exception) {
+                Log.e("MetasViewModel", "Erro ao editar meta", e)
+            }
         }
+    }
 
-        if (indice != -1) {
-
-            metas[indice] = metas[indice].copy(
-                nomeMeta = nome.trim(),
-                descricaoMeta = descricao.trim()
-            )
+    fun buscarMeta(idMeta: Int): Meta? {
+        return metas.find {
+            it.idMeta == idMeta
         }
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
@@ -27,6 +28,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,6 +44,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.myapplication.ui.theme.listaAtividades
 import com.example.myapplication.ui.theme.listaRotinas
@@ -68,7 +71,7 @@ fun TelaListaRotinas(
         ) {
 
             Text(
-                text = "Gerenciador de tempo",
+                text = "RotiApp",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
@@ -240,15 +243,17 @@ fun CardRotina(
                     contentAlignment = Alignment.Center
                 ) {
 
-                    Icon(
-                        imageVector = Icons.Default.Close,
-
-                        contentDescription = "Remover rotina",
-
-                        tint = Color.White,
-
-                        modifier = Modifier.size(20.dp)
-                    )
+                    IconButton(
+                        onClick = {
+                            TelaCriacaoViewModel().excluirRotina(idRotina)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Excluir rotina",
+                            tint = Color.Red
+                        )
+                    }
                 }
             }
         }

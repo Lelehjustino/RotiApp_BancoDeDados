@@ -2,19 +2,32 @@
 package com.example.myapplication.ui.theme
 
 import com.example.myapplication.BancoDadosProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-fun carregarDadosSalvos() {
-    val db = BancoDadosProvider.db
+suspend fun carregarDadosSalvos() {
+    val dados = withContext(Dispatchers.IO) {
+        val db = BancoDadosProvider.db
+
+        Triple(
+            db.rotinaDAO().buscarTodas(),
+            db.atividadeDAO().buscarTodas(),
+            Pair(
+                db.historicoDAO().buscarTodos(),
+                db.metaDAO().buscarTodas()
+            )
+        )
+    }
 
     listaRotinas.clear()
-    listaRotinas.addAll(db.rotinaDAO().buscarTodas())
+    listaRotinas.addAll(dados.first)
 
     listaAtividades.clear()
-    listaAtividades.addAll(db.atividadeDAO().buscarTodas())
+    listaAtividades.addAll(dados.second)
 
     listaHistorico.clear()
-    listaHistorico.addAll(db.historicoDAO().buscarTodos())
+    listaHistorico.addAll(dados.third.first)
 
     listaMetas.clear()
-    listaMetas.addAll(db.metaDAO().buscarTodas())
+    listaMetas.addAll(dados.third.second)
 }
