@@ -64,7 +64,34 @@ class TelaCriacaoViewModel : ViewModel() {
 
 
     // Adiciona uma atividade à lista
+
     fun adicionarAtividade(): Boolean {
+        val nome = nomeAtividade.value.trim()
+        val duracao = duracaoAtividade.value.trim().toDoubleOrNull()
+
+        if (nome.isBlank() || duracao == null || duracao <= 0) {
+            return false
+        }
+
+        val novoId = (atividades.maxOfOrNull { it.idAtividade } ?: 0) + 1
+
+        val novaAtividade = Atividade(
+            idAtividade = novoId,
+            idRotina = idRotinaEditando ?: proximoIdRotina(),
+            nomeAtividade = nome,
+            duracaoMinutos = duracao
+        )
+
+        // Adiciona à lista temporária da tela
+        atividades.add(novaAtividade)
+
+        // Limpa os campos
+        nomeAtividade.value = ""
+        duracaoAtividade.value = ""
+
+        return true
+    }
+    /* fun adicionarAtividade(): Boolean {
 
         if (
             nomeAtividade.value.isBlank() ||
@@ -105,7 +132,7 @@ class TelaCriacaoViewModel : ViewModel() {
         duracaoAtividade.value = ""
 
         return true
-    }
+    }*/
 
 
     // Remove uma atividade

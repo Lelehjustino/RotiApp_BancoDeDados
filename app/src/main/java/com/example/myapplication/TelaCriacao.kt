@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +32,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.ui.theme.listaRotinas
 import com.example.myapplication.ui.theme.registrarRotinaNoHistorico
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,6 +58,7 @@ fun TelaCriacao(
     val nomeAtividade by viewModel.nomeAtividade
     val duracaoAtividade by viewModel.duracaoAtividade
 
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         containerColor = begeFundo,
@@ -222,28 +228,30 @@ fun TelaCriacao(
                 // Botão adicionar
                 IconButton(
                     onClick = {
+                        try {
+                            val adicionou = viewModel.adicionarAtividade()
 
-                        val adicionou =
-                            viewModel.adicionarAtividade()
-
-                        if (adicionou) {
-
+                            if (adicionou) {
+                                Toast.makeText(
+                                    contexto,
+                                    "Atividade adicionada com sucesso!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    contexto,
+                                    "Informe um nome e uma duração maior que zero.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } catch (e: Exception) {
                             Toast.makeText(
                                 contexto,
-                                "Atividade adicionada",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                        } else {
-
-                            Toast.makeText(
-                                contexto,
-                                "Preencha nome e duração corretamente",
-                                Toast.LENGTH_SHORT
+                                "Erro ao salvar atividade. Tente novamente.",
+                                Toast.LENGTH_LONG
                             ).show()
                         }
                     },
-
                     modifier = Modifier
                         .size(64.dp)
                         .background(
@@ -251,7 +259,6 @@ fun TelaCriacao(
                             RoundedCornerShape(12.dp)
                         )
                 ) {
-
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Adicionar atividade",
@@ -259,6 +266,7 @@ fun TelaCriacao(
                         modifier = Modifier.size(32.dp)
                     )
                 }
+
             }
 
 
@@ -381,42 +389,76 @@ fun TelaCriacao(
             // SALVAR ROTINA
             Button(
                 onClick = {
-
                     if (nomeRotina.isBlank()) {
-
-
                         Toast.makeText(
                             contexto,
                             "Dê um nome à rotina",
                             Toast.LENGTH_SHORT
                         ).show()
-
                     } else {
 
-                        val rotina =
-                            viewModel.salvarRotina()
+                        scope.launch {
+                            try {
+                                val estavaEditando = viewModel.idRotinaEditando != null
+                                val rotina = viewModel.salvarRotina()
 
-                        if (rotina != null) {
+                                if (rotina == null) {
+                                    Toast.makeText(
+                                        contexto,
+                                        "Dê um nome à rotina",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@launch
+                                }
 
-                            Toast.makeText(
-                                contexto,
-                                "Rotina salva com ${viewModel.atividades.size} atividade(s)",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                withContext(Dispatchers.IO) {
+                                    val dao = BancoDadosProvider.db.rotinaDAO()
 
-                            registrarRotinaNoHistorico(
-                                rotina.nomeRotina
-                            )
+                                    if (estavaEditando) {
+                                        dao.atualizar(rotina)
+                                    } else {
+                                        dao.inserir(rotina)
+                                    }
+                                }
 
-                            listaRotinas.add(rotina)
-                            BancoDadosProvider.db.rotinaDAO().inserir(rotina)
+                                if (listaRotinas.none {
+                                        it.idRotina == rotina.idRotina
+                                    }) {
+                                    listaRotinas.add(rotina)
+                                }
 
-                            navController.popBackStack()
+                                registrarRotinaNoHistorico(rotina.nomeRotina)
+
+                                Toast.makeText(
+                                    contexto,
+                                    if (estavaEditando)
+                                        "Rotina atualizada com sucesso!"
+                                    else
+                                        "Rotina salva com sucesso!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                navController.popBackStack()
+
+                            } catch (e: Exception) {
+                                android.util.Log.e(
+                                    "TelaCriacao",
+                                    "Erro ao salvar rotina",
+                                    e
+                                )
+
+                                Toast.makeText(
+                                    contexto,
+                                    "Erro ao salvar: ${e.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     }
                 },
 
-                modifier = Modifier
+
+                        modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
 

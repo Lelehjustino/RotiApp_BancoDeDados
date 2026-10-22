@@ -210,6 +210,7 @@ fun AppNavegacao() {
             }
 
 
+
             // ==========================================
             // METAS
             // ==========================================
@@ -444,78 +445,6 @@ fun CardNivel() {
                 fontSize = 12.sp,
                 color = Color.Gray
             )
-
-            Spacer(
-                modifier = Modifier.height(16.dp)
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-
-                Button(
-                    onClick = { },
-
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFEFEBE0)
-                    ),
-
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.height(36.dp)
-                ) {
-
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = "Salvar",
-                        tint = Color.Black,
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                    Spacer(
-                        modifier = Modifier.width(4.dp)
-                    )
-
-                    Text(
-                        text = "Salvar",
-                        color = Color.Black,
-                        fontSize = 13.sp
-                    )
-                }
-
-                Spacer(
-                    modifier = Modifier.width(8.dp)
-                )
-
-                Button(
-                    onClick = { },
-
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFEFEBE0)
-                    ),
-
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.height(36.dp)
-                ) {
-
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = "Compartilhar",
-                        tint = Color.Black,
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                    Spacer(
-                        modifier = Modifier.width(4.dp)
-                    )
-
-                    Text(
-                        text = "Compartilhar",
-                        color = Color.Black,
-                        fontSize = 13.sp
-                    )
-                }
-            }
         }
     }
 }
