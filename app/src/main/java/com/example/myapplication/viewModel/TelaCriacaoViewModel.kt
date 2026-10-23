@@ -71,6 +71,7 @@ class TelaCriacaoViewModel : ViewModel() {
 
     // Adiciona uma atividade à lista
 
+
     fun adicionarAtividade(): Boolean {
         val nome = nomeAtividade.value.trim()
         val duracao = duracaoAtividade.value.trim().toDoubleOrNull()
@@ -79,24 +80,41 @@ class TelaCriacaoViewModel : ViewModel() {
             return false
         }
 
+        val idRotina = idRotinaEditando ?: proximoIdRotina()
+
         val novoId = (atividades.maxOfOrNull { it.idAtividade } ?: 0) + 1
 
         val novaAtividade = Atividade(
             idAtividade = novoId,
-            idRotina = idRotinaEditando ?: proximoIdRotina(),
+            idRotina = idRotina,
             nomeAtividade = nome,
             duracaoMinutos = duracao
         )
 
-        // Adiciona à lista temporária da tela
+        // Atualiza a lista exibida na tela
         atividades.add(novaAtividade)
 
-        // Limpa os campos
+        // Salva a atividade no Room
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    BancoDadosProvider.db.atividadeDAO().inserir(novaAtividade)
+                }
+            } catch (e: Exception) {
+                android.util.Log.e(
+                    "TelaCriacaoViewModel",
+                    "Erro ao salvar atividade no Room",
+                    e
+                )
+            }
+        }
+
         nomeAtividade.value = ""
         duracaoAtividade.value = ""
 
         return true
     }
+
     /* fun adicionarAtividade(): Boolean {
 
         if (
