@@ -1,35 +1,35 @@
-package com.example.myapplication
+package com.example.myapplication.viewModel
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.ui.theme.Atividade
-import com.example.myapplication.ui.theme.Rotina
-import com.example.myapplication.ui.theme.listaAtividades
-import com.example.myapplication.ui.theme.listaRotinas
+import com.example.myapplication.BancoDadosProvider
+import com.example.myapplication.model.Atividade
+import com.example.myapplication.model.Rotina
+import com.example.myapplication.model.listaAtividades
+import com.example.myapplication.model.listaRotinas
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.example.myapplication.ui.theme.listaAtividades as listaAtividadesGlobal
-import com.example.myapplication.ui.theme.listaRotinas as listaRotinasGlobal
 
 class TelaCriacaoViewModel : ViewModel() {
 
     // Estados do formulário
-    var nomeRotina = androidx.compose.runtime.mutableStateOf("")
+    var nomeRotina = mutableStateOf("")
         private set
 
-    var inicio = androidx.compose.runtime.mutableStateOf("08:00")
+    var inicio = mutableStateOf("08:00")
         private set
 
-    var fim = androidx.compose.runtime.mutableStateOf("09:00")
+    var fim = mutableStateOf("09:00")
         private set
 
-    var nomeAtividade = androidx.compose.runtime.mutableStateOf("")
+    var nomeAtividade = mutableStateOf("")
         private set
 
-    var duracaoAtividade = androidx.compose.runtime.mutableStateOf("")
+    var duracaoAtividade = mutableStateOf("")
         private set
 
 
@@ -39,10 +39,10 @@ class TelaCriacaoViewModel : ViewModel() {
 
     // Próximo ID da rotina
     fun proximoIdRotina(): Int {
-        return if (listaRotinasGlobal.isEmpty()) {
+        return if (listaRotinas.isEmpty()) {
             1
         } else {
-            listaRotinasGlobal.maxOf { it.idRotina } + 1
+            listaRotinas.maxOf { it.idRotina } + 1
         }
     }
 
@@ -163,7 +163,7 @@ class TelaCriacaoViewModel : ViewModel() {
         // =========================
         if (id != null) {
 
-            val rotina = listaRotinasGlobal.find {
+            val rotina = listaRotinas.find {
                 it.idRotina == id
             } ?: return null
 
@@ -174,13 +174,13 @@ class TelaCriacaoViewModel : ViewModel() {
                     it.duracaoMinutos
                 }
 
-            listaAtividadesGlobal.removeAll {
+            listaAtividades.removeAll {
                 it.idRotina == id
             }
 
             atividades.forEach { atividade ->
 
-                listaAtividadesGlobal.add(
+                listaAtividades.add(
                     atividade.copy(
                         idRotina = id
                     )
@@ -207,11 +207,11 @@ class TelaCriacaoViewModel : ViewModel() {
             tempoMinutosRotina = tempoTotal
         )
 
-        listaRotinasGlobal.add(novaRotina)
+        listaRotinas.add(novaRotina)
 
         atividades.forEach { atividade ->
 
-            listaAtividadesGlobal.add(
+            listaAtividades.add(
                 atividade.copy(
                     idRotina = novoId
                 )
@@ -226,7 +226,7 @@ class TelaCriacaoViewModel : ViewModel() {
 
     fun carregarRotinaParaEditar(id: Int) {
 
-        val rotina = listaRotinasGlobal.find {
+        val rotina = listaRotinas.find {
             it.idRotina == id
         } ?: return
 
@@ -240,7 +240,7 @@ class TelaCriacaoViewModel : ViewModel() {
         atividades.clear()
 
         atividades.addAll(
-            listaAtividadesGlobal.filter {
+            listaAtividades.filter {
                 it.idRotina == id
             }
         )

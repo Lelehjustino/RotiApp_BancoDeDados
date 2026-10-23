@@ -1,5 +1,4 @@
-
-package com.example.myapplication.ui.theme
+package com.example.myapplication.model
 
 import com.example.myapplication.BancoDadosProvider
 import kotlinx.coroutines.Dispatchers

@@ -1,9 +1,11 @@
-package com.example.myapplication
+package com.example.myapplication.viewModel
 
+import android.util.Patterns
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.ui.theme.Perfil
+import com.example.myapplication.BancoDadosProvider
+import com.example.myapplication.model.Perfil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,7 +65,7 @@ class PerfilViewModel : ViewModel() {
             return
         }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS
+        if (!Patterns.EMAIL_ADDRESS
                 .matcher(emailLimpo)
                 .matches()
         ) {

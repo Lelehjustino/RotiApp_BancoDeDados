@@ -1,12 +1,12 @@
-
-package com.example.myapplication
+package com.example.myapplication.viewModel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.ui.theme.Meta
-import com.example.myapplication.ui.theme.listaMetas
-import com.example.myapplication.ui.theme.registrarMetaNoHistorico
+import com.example.myapplication.BancoDadosProvider
+import com.example.myapplication.model.Meta
+import com.example.myapplication.model.listaMetas
+import com.example.myapplication.model.registrarMetaNoHistorico
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -1,5 +1,4 @@
-
-package com.example.myapplication
+package com.example.myapplication.view
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

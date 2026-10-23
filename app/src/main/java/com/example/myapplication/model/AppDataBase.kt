@@ -5,7 +5,11 @@ import android.content.Context
 import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
-import com.example.myapplication.ui.theme.*
+import com.example.myapplication.model.Atividade
+import com.example.myapplication.model.Historico
+import com.example.myapplication.model.Meta
+import com.example.myapplication.model.Perfil
+import com.example.myapplication.model.Rotina
 
 @Database(
     entities = [

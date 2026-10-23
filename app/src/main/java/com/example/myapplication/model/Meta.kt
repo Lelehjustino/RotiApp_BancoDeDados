@@ -1,5 +1,4 @@
-
-package com.example.myapplication.ui.theme
+package com.example.myapplication.model
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.room3.Entity

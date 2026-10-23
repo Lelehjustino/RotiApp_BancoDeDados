@@ -1,5 +1,4 @@
-
-package com.example.myapplication
+package com.example.myapplication.view
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.myapplication.viewModel.PerfilViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

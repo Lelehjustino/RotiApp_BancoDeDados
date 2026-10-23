@@ -1,8 +1,6 @@
-
-package com.example.myapplication
+package com.example.myapplication.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,8 +32,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.myapplication.viewModel.PerfilViewModel
+import com.example.myapplication.RotaAbas
 
 @Composable
 fun TelaPerfil(
@@ -99,7 +99,7 @@ fun TelaPerfil(
         // =========================================
 
         if (carregando) {
-            androidx.compose.material3.CircularProgressIndicator(
+            CircularProgressIndicator(
                 color = verde
             )
         } else if (!viewModel.possuiCadastro()) {

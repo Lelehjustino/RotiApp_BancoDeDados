@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,13 +18,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -51,9 +49,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.myapplication.ui.theme.calcularNivel
-import com.example.myapplication.ui.theme.calcularXp
-import com.example.myapplication.ui.theme.calcularXpNoNivel
+import com.example.myapplication.viewModel.PerfilViewModel
+import com.example.myapplication.RotaAbas
+import com.example.myapplication.viewModel.TelaCriacaoViewModel
+import com.example.myapplication.model.calcularNivel
+import com.example.myapplication.model.calcularXp
+import com.example.myapplication.model.calcularXpNoNivel
 
 
 // ============================================================

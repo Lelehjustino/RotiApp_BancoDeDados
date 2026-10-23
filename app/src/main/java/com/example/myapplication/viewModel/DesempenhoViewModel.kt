@@ -1,15 +1,14 @@
-
-package com.example.myapplication
+package com.example.myapplication.viewModel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.ui.theme.Atividade
-import com.example.myapplication.ui.theme.Rotina
-import com.example.myapplication.ui.theme.calcularNivel
-import com.example.myapplication.ui.theme.calcularXp
-import com.example.myapplication.ui.theme.calcularXpNoNivel
-import com.example.myapplication.ui.theme.listaAtividades
-import com.example.myapplication.ui.theme.listaRotinas
+import com.example.myapplication.model.Atividade
+import com.example.myapplication.model.Rotina
+import com.example.myapplication.model.calcularNivel
+import com.example.myapplication.model.calcularXp
+import com.example.myapplication.model.calcularXpNoNivel
+import com.example.myapplication.model.listaAtividades
+import com.example.myapplication.model.listaRotinas
 
 class DesempenhoViewModel : ViewModel() {
 
@@ -94,4 +93,3 @@ class DesempenhoViewModel : ViewModel() {
         return xpNoNivel() / 100f
     }
 }
-

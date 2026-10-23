@@ -1,11 +1,11 @@
-package com.example.myapplication
+package com.example.myapplication.view
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,9 +29,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.myapplication.ui.theme.listaRotinas
-import com.example.myapplication.ui.theme.registrarRotinaNoHistorico
-import kotlinx.coroutines.CoroutineScope
+import androidx.navigation.NavHostController
+import com.example.myapplication.BancoDadosProvider
+import com.example.myapplication.viewModel.TelaCriacaoViewModel
+import com.example.myapplication.model.listaRotinas
+import com.example.myapplication.model.registrarRotinaNoHistorico
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,7 +42,7 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaCriacao(
-    navController: androidx.navigation.NavHostController,
+    navController: NavHostController,
     viewModel: TelaCriacaoViewModel = viewModel()
 ) {
 
@@ -441,7 +442,7 @@ fun TelaCriacao(
                                 navController.popBackStack()
 
                             } catch (e: Exception) {
-                                android.util.Log.e(
+                                Log.e(
                                     "TelaCriacao",
                                     "Erro ao salvar rotina",
                                     e

@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,11 +37,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.myapplication.viewModel.DesempenhoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -419,7 +421,7 @@ fun TelaDesempenho(
 private fun EstatisticaCard(
     titulo: String,
     valor: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     modifier: Modifier
 ) {
 

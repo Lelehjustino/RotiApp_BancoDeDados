@@ -1,5 +1,4 @@
-
-package com.example.myapplication
+package com.example.myapplication.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,7 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.myapplication.ui.theme.Meta
+import com.example.myapplication.viewModel.MetasViewModel
+import com.example.myapplication.model.Meta
 
 @Composable
 fun TelaMetas(

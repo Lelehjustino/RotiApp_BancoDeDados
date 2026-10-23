@@ -1,8 +1,8 @@
-package com.example.myapplication
+package com.example.myapplication.viewModel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.ui.theme.Historico
+import com.example.myapplication.model.Historico
 
 class HistoricoViewModel : ViewModel() {
 

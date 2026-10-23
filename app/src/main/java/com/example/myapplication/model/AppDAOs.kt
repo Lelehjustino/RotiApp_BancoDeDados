@@ -7,8 +7,11 @@ import androidx.room3.Update
 import androidx.room3.Delete
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
-import androidx.room3.Upsert
-import com.example.myapplication.ui.theme.*
+import com.example.myapplication.model.Atividade
+import com.example.myapplication.model.Historico
+import com.example.myapplication.model.Meta
+import com.example.myapplication.model.Perfil
+import com.example.myapplication.model.Rotina
 
 @Dao
 interface RotinaDAO {

@@ -1,5 +1,4 @@
-
-package com.example.myapplication
+package com.example.myapplication.view
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
@@ -44,10 +42,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.myapplication.ui.theme.listaAtividades
-import com.example.myapplication.ui.theme.listaRotinas
+import com.example.myapplication.RotaAbas
+import com.example.myapplication.viewModel.TelaCriacaoViewModel
+import com.example.myapplication.model.listaAtividades
+import com.example.myapplication.model.listaRotinas
 
 
 @Composable
