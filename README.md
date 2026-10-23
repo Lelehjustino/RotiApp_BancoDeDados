@@ -4,7 +4,7 @@ Aplicativo Android desenvolvido em Kotlin com Jetpack Compose para a disciplina 
 
 O RotinApp tem como objetivo auxiliar os usuários na organização de suas rotinas, no acompanhamento de metas e na visualização do progresso pessoal.
 
-Este projeto corresponde ao **Trabalho 3 — Persistência de Dados com Room**, continuação do Trabalho 2, com foco na implementação de persistência local utilizando Room, biblioteca do Android Jetpack que fornece uma camada de abstração sobre o SQLite.
+Este projeto corresponde ao **Persistência de Dados com Room**, continuação do Trabalho 2, com foco na implementação de persistência local utilizando Room, biblioteca do Android Jetpack que fornece uma camada de abstração sobre o SQLite.
 
 ## Demonstração
 
