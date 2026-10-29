@@ -43,7 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.myapplication.RotaAbas
+import com.example.myapplication.navigation.RotaAbas
 import com.example.myapplication.viewModel.TelaCriacaoViewModel
 import com.example.myapplication.model.listaAtividades
 import com.example.myapplication.model.listaRotinas

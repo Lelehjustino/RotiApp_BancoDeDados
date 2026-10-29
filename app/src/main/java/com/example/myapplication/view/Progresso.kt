@@ -50,7 +50,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.myapplication.viewModel.PerfilViewModel
-import com.example.myapplication.RotaAbas
+import com.example.myapplication.navigation.RotaAbas
 import com.example.myapplication.viewModel.TelaCriacaoViewModel
 import com.example.myapplication.model.calcularNivel
 import com.example.myapplication.model.calcularXp

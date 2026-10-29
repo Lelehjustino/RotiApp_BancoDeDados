@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplication.BancoDadosProvider
-import com.example.myapplication.RotaAbas
+import com.example.myapplication.navigation.RotaAbas
 import com.example.myapplication.model.Atividade
 import com.example.myapplication.model.Rotina
 import kotlinx.coroutines.Dispatchers

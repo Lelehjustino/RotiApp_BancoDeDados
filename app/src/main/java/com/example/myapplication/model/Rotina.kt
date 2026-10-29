@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableStateListOf
 
 @Entity(tableName = "rotinas")
 data class Rotina(
-    @PrimaryKey
-    val idRotina: Int,
-    var nomeRotina: String,
-    var tempoMinutosRotina: Double
+    @PrimaryKey(autoGenerate = true)
+    val idRotina: Int = 0,
+    val nomeRotina: String,
+    val tempoMinutosRotina: Int
 )
 
 val listaRotinas = mutableStateListOf<Rotina>()

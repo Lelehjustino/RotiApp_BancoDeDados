@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.myapplication.viewModel.PerfilViewModel
-import com.example.myapplication.RotaAbas
+import com.example.myapplication.navigation.RotaAbas
 
 @Composable
 fun TelaPerfil(

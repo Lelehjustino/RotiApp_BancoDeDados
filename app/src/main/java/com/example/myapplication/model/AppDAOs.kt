@@ -19,7 +19,7 @@ interface RotinaDAO {
     fun buscarTodas(): List<Rotina>
 
     @Insert
-    fun inserir(rotina: Rotina)
+    fun inserir(rotina: Rotina): Long
 
     @Update
     fun atualizar(rotina: Rotina)

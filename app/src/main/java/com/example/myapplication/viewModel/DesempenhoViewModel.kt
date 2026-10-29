@@ -30,9 +30,7 @@ class DesempenhoViewModel : ViewModel() {
     }
 
     fun tempoTotal(): Double {
-        return rotinas.value.sumOf {
-            it.tempoMinutosRotina
-        }
+        return rotinas.value.sumOf { it.tempoMinutosRotina.toDouble() }
     }
 
     fun mediaTempoRotina(): Double {

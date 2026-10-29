@@ -1,3 +1,4 @@
+
 package com.example.myapplication.viewModel
 
 import android.util.Log
@@ -16,7 +17,6 @@ import kotlinx.coroutines.withContext
 
 class TelaCriacaoViewModel : ViewModel() {
 
-    // Estados do formulário
     var nomeRotina = mutableStateOf("")
         private set
 
@@ -32,22 +32,15 @@ class TelaCriacaoViewModel : ViewModel() {
     var duracaoAtividade = mutableStateOf("")
         private set
 
-
-    // Lista reativa de atividades da rotina que está sendo criada
     val atividades = mutableStateListOf<Atividade>()
 
+    var idRotinaEditando: Int? = null
+        private set
 
-    // Próximo ID da rotina
     fun proximoIdRotina(): Int {
-        return if (listaRotinas.isEmpty()) {
-            1
-        } else {
-            listaRotinas.maxOf { it.idRotina } + 1
-        }
+        return (listaRotinas.maxOfOrNull { it.idRotina } ?: 0) + 1
     }
 
-
-    // Alterações dos campos
     fun alterarNomeRotina(valor: String) {
         nomeRotina.value = valor
     }
@@ -68,46 +61,26 @@ class TelaCriacaoViewModel : ViewModel() {
         duracaoAtividade.value = valor.filter { it.isDigit() }
     }
 
-
-    // Adiciona uma atividade à lista
-
-
+    // Apenas adiciona a atividade à lista temporária.
+    // O banco será atualizado ao salvar a rotina.
     fun adicionarAtividade(): Boolean {
         val nome = nomeAtividade.value.trim()
-        val duracao = duracaoAtividade.value.trim().toDoubleOrNull()
+        val duracao = duracaoAtividade.value.toDoubleOrNull()
 
         if (nome.isBlank() || duracao == null || duracao <= 0) {
             return false
         }
 
-        val idRotina = idRotinaEditando ?: proximoIdRotina()
-
         val novoId = (atividades.maxOfOrNull { it.idAtividade } ?: 0) + 1
 
         val novaAtividade = Atividade(
             idAtividade = novoId,
-            idRotina = idRotina,
+            idRotina = idRotinaEditando ?: 0,
             nomeAtividade = nome,
             duracaoMinutos = duracao
         )
 
-        // Atualiza a lista exibida na tela
         atividades.add(novaAtividade)
-
-        // Salva a atividade no Room
-        viewModelScope.launch {
-            try {
-                withContext(Dispatchers.IO) {
-                    BancoDadosProvider.db.atividadeDAO().inserir(novaAtividade)
-                }
-            } catch (e: Exception) {
-                android.util.Log.e(
-                    "TelaCriacaoViewModel",
-                    "Erro ao salvar atividade no Room",
-                    e
-                )
-            }
-        }
 
         nomeAtividade.value = ""
         duracaoAtividade.value = ""
@@ -115,153 +88,124 @@ class TelaCriacaoViewModel : ViewModel() {
         return true
     }
 
-    /* fun adicionarAtividade(): Boolean {
-
-        if (
-            nomeAtividade.value.isBlank() ||
-            duracaoAtividade.value.isBlank()
-        ) {
-            return false
-        }
-
-        val duracao = duracaoAtividade.value.toDoubleOrNull()
-
-        if (duracao == null || duracao <= 0) {
-            return false
-        }
-
-        val novoId = if (atividades.isEmpty()) {
-            1
-        } else {
-            atividades.maxOf { it.idAtividade } + 1
-        }
-
-        val novoIdRotina = proximoIdRotina()
-
-        val novaAtividade = Atividade(
-            idAtividade = novoId,
-            idRotina = novoIdRotina, // ID da rotina atual
-            nomeAtividade = nomeAtividade.value,
-            duracaoMinutos = duracao
-        )
-
-        listaAtividades.add(novaAtividade)
-
-        BancoDadosProvider.db.atividadeDAO().inserir(novaAtividade)
-
-        atividades.add(novaAtividade)
-
-        // Limpa os campos
-        nomeAtividade.value = ""
-        duracaoAtividade.value = ""
-
-        return true
-    }*/
-
-
-    // Remove uma atividade
     fun removerAtividade(id: Int) {
-        atividades.removeAll {
-            it.idAtividade == id
-        }
+        atividades.removeAll { it.idAtividade == id }
     }
 
+    // Salva a rotina e suas atividades no Room.
+    suspend fun salvarRotina(): Rotina? {
+        val nome = nomeRotina.value.trim()
 
-    // Salva a rotina inteira
-    fun salvarRotina(): Rotina? {
-
-        if (nomeRotina.value.isBlank()) {
+        if (nome.isBlank()) {
             return null
         }
 
-        val id = idRotinaEditando
+        return try {
+            val rotinaSalva = withContext(Dispatchers.IO) {
+                val db = BancoDadosProvider.db
+                val rotinaDAO = db.rotinaDAO()
+                val atividadeDAO = db.atividadeDAO()
 
-        // =========================
-        // EDITANDO
-        // =========================
-        if (id != null) {
+                val idExistente = idRotinaEditando
 
-            val rotina = listaRotinas.find {
-                it.idRotina == id
-            } ?: return null
+                val tempoTotal = atividades
+                    .sumOf { it.duracaoMinutos }
+                    .toInt()
 
-            rotina.nomeRotina = nomeRotina.value
+                val rotina = Rotina(
+                    idRotina = idExistente ?: 0,
+                    nomeRotina = nome,
+                    tempoMinutosRotina = tempoTotal
+                )
 
-            rotina.tempoMinutosRotina =
-                atividades.sumOf {
-                    it.duracaoMinutos
+                // Salva a rotina primeiro para obter o ID correto
+                val idFinal: Int = if (idExistente == null) {
+                    rotinaDAO.inserir(rotina).toInt()
+                } else {
+                    rotinaDAO.atualizar(rotina)
+                    atividadeDAO.excluirPorRotina(idExistente)
+                    idExistente
                 }
 
-            listaAtividades.removeAll {
-                it.idRotina == id
-            }
+                val rotinaFinal = rotina.copy(idRotina = idFinal)
 
-            atividades.forEach { atividade ->
+                // Evita reutilizar IDs de atividades já existentes no banco.
+                var proximoIdAtividade =
+                    (atividadeDAO.buscarTodas()
+                        .maxOfOrNull { it.idAtividade } ?: 0) + 1
 
-                listaAtividades.add(
-                    atividade.copy(
-                        idRotina = id
+                // Grava todas as atividades vinculadas à rotina correta.
+                atividades.forEach { atividade ->
+                    val atividadeSalva = atividade.copy(
+                        idAtividade = proximoIdAtividade++,
+                        idRotina = idFinal
                     )
-                )
+
+                    atividadeDAO.inserir(atividadeSalva)
+                }
+
+                rotinaFinal
             }
 
-            return rotina
+            // Atualiza as listas em memória após salvar no banco.
+            val indice = listaRotinas.indexOfFirst {
+                it.idRotina == rotinaSalva.idRotina
+            }
+
+            if (indice >= 0) {
+                listaRotinas[indice] = rotinaSalva
+            } else {
+                listaRotinas.add(rotinaSalva)
+            }
+
+            listaAtividades.removeAll {
+                it.idRotina == rotinaSalva.idRotina
+            }
+
+            // Recarrega as atividades com os IDs que foram gravados no banco.
+            val atividadesSalvas = withContext(Dispatchers.IO) {
+                BancoDadosProvider.db.atividadeDAO()
+                    .buscarPorRotina(rotinaSalva.idRotina)
+            }
+
+            listaAtividades.addAll(atividadesSalvas)
+
+            idRotinaEditando = rotinaSalva.idRotina
+
+            rotinaSalva
+        } catch (e: Exception) {
+            Log.e("TelaCriacaoViewModel", "Erro ao salvar rotina", e)
+            null
         }
-
-
-        // =========================
-        // CRIANDO NOVA
-        // =========================
-
-        val novoId = proximoIdRotina()
-
-        val tempoTotal = atividades.sumOf {
-            it.duracaoMinutos
-        }
-
-        val novaRotina = Rotina(
-            idRotina = novoId,
-            nomeRotina = nomeRotina.value,
-            tempoMinutosRotina = tempoTotal
-        )
-
-        listaRotinas.add(novaRotina)
-
-        atividades.forEach { atividade ->
-
-            listaAtividades.add(
-                atividade.copy(
-                    idRotina = novoId
-                )
-            )
-        }
-
-        return novaRotina
     }
 
-    var idRotinaEditando: Int? = null
-        private set
-
     fun carregarRotinaParaEditar(id: Int) {
+        viewModelScope.launch {
+            try {
+                val resultado = withContext(Dispatchers.IO) {
+                    val db = BancoDadosProvider.db
 
-        val rotina = listaRotinas.find {
-            it.idRotina == id
-        } ?: return
+                    val rotina = db.rotinaDAO()
+                        .buscarTodas()
+                        .find { it.idRotina == id }
 
-        idRotinaEditando = id
+                    val atividadesExistentes = db.atividadeDAO()
+                        .buscarPorRotina(id)
 
-        nomeRotina.value = rotina.nomeRotina
+                    Pair(rotina, atividadesExistentes)
+                }
 
-        // Se você estiver salvando início e fim na Rotina,
-        // podemos carregar esses valores aqui também.
+                val rotina = resultado.first ?: return@launch
 
-        atividades.clear()
+                idRotinaEditando = id
+                nomeRotina.value = rotina.nomeRotina
 
-        atividades.addAll(
-            listaAtividades.filter {
-                it.idRotina == id
+                atividades.clear()
+                atividades.addAll(resultado.second)
+            } catch (e: Exception) {
+                Log.e("TelaCriacaoViewModel", "Erro ao carregar rotina", e)
             }
-        )
+        }
     }
 
     fun excluirRotina(idRotina: Int) {
@@ -269,7 +213,7 @@ class TelaCriacaoViewModel : ViewModel() {
             try {
                 excluirRotinaDoBanco(idRotina)
             } catch (e: Exception) {
-                Log.e("RotiApp", "Erro ao excluir rotina", e)
+                Log.e("TelaCriacaoViewModel", "Erro ao excluir rotina", e)
             }
         }
     }
@@ -292,5 +236,4 @@ class TelaCriacaoViewModel : ViewModel() {
         listaAtividades.removeAll { it.idRotina == idRotina }
         listaRotinas.removeAll { it.idRotina == idRotina }
     }
-
 }

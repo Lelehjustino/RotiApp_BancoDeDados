@@ -428,6 +428,12 @@ fun TelaCriacao(
                                     listaRotinas.add(rotina)
                                 }
 
+                                if (listaRotinas.none {
+                                        it.idRotina == rotina.idRotina
+                                    }) {
+                                    listaRotinas.add(rotina)
+                                }
+
                                 registrarRotinaNoHistorico(rotina.nomeRotina)
 
                                 Toast.makeText(
