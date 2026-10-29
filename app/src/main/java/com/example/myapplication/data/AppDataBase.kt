@@ -6,13 +6,14 @@ import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
 import com.example.myapplication.model.Atividade
-import com.example.myapplication.model.AtividadeDAO
+import com.example.myapplication.data.AtividadeDAO
 import com.example.myapplication.model.Historico
-import com.example.myapplication.model.HistoricoDAO
+import com.example.myapplication.data.HistoricoDAO
 import com.example.myapplication.model.Meta
-import com.example.myapplication.model.MetaDAO
+import com.example.myapplication.data.MetaDAO
 import com.example.myapplication.model.Perfil
-import com.example.myapplication.model.PerfilDAO
+import com.example.myapplication.data.PerfilDAO
+import com.example.myapplication.data.RotinaDAO
 import com.example.myapplication.model.Rotina
 
 @Database(

@@ -84,4 +84,7 @@ dependencies {
 
     implementation("androidx.room3:room3-runtime:$room_version")
     ksp("androidx.room3:room3-compiler:$room_version")
+
+    // --------- Flow --------------
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0")
 }

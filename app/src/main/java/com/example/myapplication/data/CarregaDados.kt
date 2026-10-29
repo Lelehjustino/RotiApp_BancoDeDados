@@ -1,6 +1,10 @@
-package com.example.myapplication.model
+package com.example.myapplication.data
 
 import com.example.myapplication.BancoDadosProvider
+import com.example.myapplication.model.listaAtividades
+import com.example.myapplication.model.listaHistorico
+import com.example.myapplication.model.listaMetas
+import com.example.myapplication.model.listaRotinas
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

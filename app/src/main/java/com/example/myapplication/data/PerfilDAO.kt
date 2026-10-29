@@ -1,4 +1,4 @@
-package com.example.myapplication.model
+package com.example.myapplication.data
 
 import androidx.room3.Dao
 import androidx.room3.Insert
@@ -9,7 +9,7 @@ import com.example.myapplication.model.Perfil
 @Dao
 interface PerfilDAO {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun salvarPerfil(perfil: Perfil)
 
     @Query("SELECT * FROM perfil WHERE id = 1 LIMIT 1")

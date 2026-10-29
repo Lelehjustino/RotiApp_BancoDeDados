@@ -1,4 +1,4 @@
-package com.example.myapplication.viewModel
+package com.example.myapplication
 
 import android.os.Bundle
 import android.util.Log
@@ -6,10 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
-import com.example.myapplication.BancoDadosProvider
-import com.example.myapplication.model.carregarDadosSalvos
+import com.example.myapplication.data.carregarDadosSalvos
+import com.example.myapplication.navigation.AppNavegacao
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.example.myapplication.view.AppNavegacao
 import com.example.myapplication.view.TelaCarregamento
 import kotlinx.coroutines.launch
 

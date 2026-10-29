@@ -1,9 +1,10 @@
-package com.example.myapplication.model
+package com.example.myapplication.data
 
 import androidx.room3.Dao
 import androidx.room3.Delete
 import androidx.room3.Insert
 import androidx.room3.Query
+import com.example.myapplication.model.Historico
 
 @Dao
 interface HistoricoDAO {
