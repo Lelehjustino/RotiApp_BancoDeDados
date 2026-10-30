@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.myapplication.navigation.RotaAbas
 import com.example.myapplication.viewmodel.RotinaViewModel
+import com.example.myapplication.viewmodel.uistate.RotinaUiState
 
 @Composable
 fun TelaRotina(
@@ -33,9 +34,11 @@ fun TelaRotina(
 ) {
     val fundoBege = Color(0xFFF3EFE0)
 
-    val carregando by viewModel.carregando.collectAsState()
-    val erroCarregamento by viewModel.erroCarregamento.collectAsState()
-    val rotina = viewModel.rotina
+    val uiState: RotinaUiState by viewModel.uiState.collectAsState()
+
+    val carregando: Boolean = uiState.carregando
+    val erroCarregamento: Boolean = uiState.erroCarregamento
+    val rotina = uiState.rotina
 
     // Carrega os dados sempre que o idRotina mudar
     LaunchedEffect(idRotina) {
@@ -130,7 +133,7 @@ fun TelaRotina(
                 }
             }
 
-            viewModel.atividadesDaRotina.isEmpty() -> {
+            uiState.atividadesDaRotina.isEmpty() -> {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -149,10 +152,12 @@ fun TelaRotina(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(
-                        items = viewModel.atividadesDaRotina,
+                        items = uiState.atividadesDaRotina,
                         key = { it.idAtividade }
                     ) { atividade ->
-                        val concluida = viewModel.atividadesConcluidas[atividade.idAtividade] ?: false
+
+                        val concluida =
+                            atividade.idAtividade in uiState.atividadesConcluidas
 
                         CardTarefa(
                             titulo = atividade.nomeAtividade,
