@@ -9,7 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.data.carregarDadosSalvos
 import com.example.myapplication.navigation.AppNavegacao
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.example.myapplication.view.TelaCarregamento
+import com.example.myapplication.ui.theme.view.TelaCarregamento
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {

@@ -10,16 +10,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.view.BarraNavegacao
-import com.example.myapplication.view.Progresso
-import com.example.myapplication.view.TelaCriacao
-import com.example.myapplication.view.TelaDesempenho
-import com.example.myapplication.view.TelaHistorico
-import com.example.myapplication.view.TelaListaRotinas
-import com.example.myapplication.view.TelaMetas
-import com.example.myapplication.view.TelaPerfil
-import com.example.myapplication.view.TelaPerfilCont
-import com.example.myapplication.view.TelaRotina
+import com.example.myapplication.ui.theme.view.BarraNavegacao
+import com.example.myapplication.ui.theme.view.Progresso
+import com.example.myapplication.ui.theme.view.TelaCriacao
+import com.example.myapplication.ui.theme.view.TelaDesempenho
+import com.example.myapplication.ui.theme.view.TelaHistorico
+import com.example.myapplication.ui.theme.view.TelaListaRotinas
+import com.example.myapplication.ui.theme.view.TelaMetas
+import com.example.myapplication.ui.theme.view.TelaPerfil
+import com.example.myapplication.ui.theme.view.TelaPerfilCont
+import com.example.myapplication.ui.theme.view.TelaRotina
 import com.example.myapplication.viewModel.PerfilViewModel
 import com.example.myapplication.viewModel.TelaCriacaoViewModel
 

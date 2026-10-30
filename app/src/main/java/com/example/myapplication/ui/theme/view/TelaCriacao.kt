@@ -1,4 +1,4 @@
-package com.example.myapplication.view
+package com.example.myapplication.ui.theme.view
 
 import android.util.Log
 import android.widget.Toast

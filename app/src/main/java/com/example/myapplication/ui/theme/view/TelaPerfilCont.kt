@@ -1,4 +1,4 @@
-package com.example.myapplication.view
+package com.example.myapplication.ui.theme.view
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
