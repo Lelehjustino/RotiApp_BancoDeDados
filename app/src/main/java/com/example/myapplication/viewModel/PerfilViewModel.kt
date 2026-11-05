@@ -1,105 +1,29 @@
 package com.example.myapplication.viewModel
 
-import android.util.Patterns
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.myapplication.BancoDadosProvider
 import com.example.myapplication.model.Perfil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.myapplication.viewmodel.uistate.PerfilUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class PerfilViewModel : ViewModel() {
 
-    var perfil = mutableStateOf(Perfil())
-        private set
+    private val _uiState = MutableStateFlow(PerfilUiState())
+    val uiState: StateFlow<PerfilUiState> = _uiState.asStateFlow()
 
-    var carregando = mutableStateOf(true)
-        private set
-
-    var erro = mutableStateOf<String?>(null)
-        private set
-
-    init {
-        carregarPerfil()
-    }
-
-    fun possuiCadastro(): Boolean {
-        return perfil.value.nome.isNotBlank() &&
-                perfil.value.email.isNotBlank()
-    }
-
-    fun carregarPerfil() {
-        viewModelScope.launch {
-            carregando.value = true
-
-            try {
-                val perfilSalvo = withContext(Dispatchers.IO) {
-                    BancoDadosProvider.db
-                        .perfilDAO()
-                        .buscarPerfil()
-                }
-
-                perfil.value = perfilSalvo ?: Perfil()
-                erro.value = null
-
-            } catch (e: Exception) {
-                erro.value = "Não foi possível carregar o perfil."
-            } finally {
-                carregando.value = false
-            }
-        }
-    }
-
-    fun salvarPerfil(
-        nome: String,
-        email: String,
-        aoSalvar: () -> Unit
-    ) {
-        val nomeLimpo = nome.trim()
-        val emailLimpo = email.trim()
-
-        if (nomeLimpo.isBlank() || emailLimpo.isBlank()) {
-            erro.value = "Preencha o nome e o e-mail."
+    fun salvarPerfil(nome: String, email: String, onSuccess: () -> Unit) {
+        if (nome.isBlank() || email.isBlank()) {
+            _uiState.update { it.copy(erro = "Preencha todos os campos.") }
             return
         }
-
-        if (!Patterns.EMAIL_ADDRESS
-                .matcher(emailLimpo)
-                .matches()
-        ) {
-            erro.value = "Digite um e-mail válido."
-            return
+        _uiState.update {
+            it.copy(
+                perfil = Perfil(nome = nome, email = email),
+                erro = null
+            )
         }
-
-        viewModelScope.launch {
-            try {
-                erro.value = null
-
-                val novoPerfil = Perfil(
-                    id = 1,
-                    nome = nomeLimpo,
-                    email = emailLimpo
-                )
-
-                withContext(Dispatchers.IO) {
-                    BancoDadosProvider.db
-                        .perfilDAO()
-                        .salvarPerfil(novoPerfil)
-                }
-
-                // Atualiza a tela somente depois de salvar no banco.
-                perfil.value = novoPerfil
-                erro.value = null
-
-                aoSalvar()
-
-            } catch (e: Exception) {
-                    erro.value = "Erro ao salvar perfil: ${
-                        e.localizedMessage ?: "erro desconhecido"
-                    }"
-            }
-        }
+        onSuccess()
     }
 }

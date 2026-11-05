@@ -1,9 +1,6 @@
-
 package com.example.myapplication.viewModel
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.BancoDadosProvider
@@ -11,90 +8,85 @@ import com.example.myapplication.model.Atividade
 import com.example.myapplication.model.Rotina
 import com.example.myapplication.model.listaAtividades
 import com.example.myapplication.model.listaRotinas
+import com.example.myapplication.viewmodel.uistate.TelaCriacaoUiState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class TelaCriacaoViewModel : ViewModel() {
 
-    var nomeRotina = mutableStateOf("")
-        private set
-
-    var inicio = mutableStateOf("08:00")
-        private set
-
-    var fim = mutableStateOf("09:00")
-        private set
-
-    var nomeAtividade = mutableStateOf("")
-        private set
-
-    var duracaoAtividade = mutableStateOf("")
-        private set
-
-    val atividades = mutableStateListOf<Atividade>()
-
-    var idRotinaEditando: Int? = null
-        private set
-
-    fun proximoIdRotina(): Int {
-        return (listaRotinas.maxOfOrNull { it.idRotina } ?: 0) + 1
-    }
+    private val _uiState = MutableStateFlow(TelaCriacaoUiState())
+    val uiState: StateFlow<TelaCriacaoUiState> = _uiState.asStateFlow()
 
     fun alterarNomeRotina(valor: String) {
-        nomeRotina.value = valor
+        _uiState.update { it.copy(nomeRotina = valor) }
     }
 
     fun alterarInicio(valor: String) {
-        inicio.value = valor
+        _uiState.update { it.copy(inicio = valor) }
     }
 
     fun alterarFim(valor: String) {
-        fim.value = valor
+        _uiState.update { it.copy(fim = valor) }
     }
 
     fun alterarNomeAtividade(valor: String) {
-        nomeAtividade.value = valor
+        _uiState.update { it.copy(nomeAtividade = valor) }
     }
 
     fun alterarDuracaoAtividade(valor: String) {
-        duracaoAtividade.value = valor.filter { it.isDigit() }
+        _uiState.update { it.copy(duracaoAtividade = valor.filter { char -> char.isDigit() }) }
     }
 
-    // Apenas adiciona a atividade à lista temporária.
-    // O banco será atualizado ao salvar a rotina.
     fun adicionarAtividade(): Boolean {
-        val nome = nomeAtividade.value.trim()
-        val duracao = duracaoAtividade.value.toDoubleOrNull()
+        val currentState = _uiState.value
+        val nome = currentState.nomeAtividade.trim()
+        val duracao = currentState.duracaoAtividade.toDoubleOrNull()
 
         if (nome.isBlank() || duracao == null || duracao <= 0) {
             return false
         }
 
-        val novoId = (atividades.maxOfOrNull { it.idAtividade } ?: 0) + 1
+        val novoId = (currentState.atividades.maxOfOrNull { it.idAtividade } ?: 0) + 1
 
         val novaAtividade = Atividade(
             idAtividade = novoId,
-            idRotina = idRotinaEditando ?: 0,
+            idRotina = currentState.idRotinaEditando ?: 0,
             nomeAtividade = nome,
             duracaoMinutos = duracao
         )
 
-        atividades.add(novaAtividade)
+        val novaLista = currentState.atividades.toMutableList().apply {
+            add(novaAtividade)
+        }
 
-        nomeAtividade.value = ""
-        duracaoAtividade.value = ""
+        _uiState.update {
+            it.copy(
+                atividades = novaLista,
+                nomeAtividade = "",
+                duracaoAtividade = ""
+            )
+        }
 
         return true
     }
 
     fun removerAtividade(id: Int) {
-        atividades.removeAll { it.idAtividade == id }
+        _uiState.update { state ->
+            val novaLista = state.atividades.toMutableList().apply {
+                removeAll { it.idAtividade == id }
+            }
+            state.copy(atividades = novaLista)
+        }
     }
 
-    // Salva a rotina e suas atividades no Room.
     suspend fun salvarRotina(): Rotina? {
-        val nome = nomeRotina.value.trim()
+        val currentState = _uiState.value
+        val nome = currentState.nomeRotina.trim()
 
         if (nome.isBlank()) {
             return null
@@ -106,9 +98,9 @@ class TelaCriacaoViewModel : ViewModel() {
                 val rotinaDAO = db.rotinaDAO()
                 val atividadeDAO = db.atividadeDAO()
 
-                val idExistente = idRotinaEditando
+                val idExistente = currentState.idRotinaEditando
 
-                val tempoTotal = atividades
+                val tempoTotal = currentState.atividades
                     .sumOf { it.duracaoMinutos }
                     .toInt()
 
@@ -118,7 +110,6 @@ class TelaCriacaoViewModel : ViewModel() {
                     tempoMinutosRotina = tempoTotal
                 )
 
-                // Salva a rotina primeiro para obter o ID correto
                 val idFinal: Int = if (idExistente == null) {
                     rotinaDAO.inserir(rotina).toInt()
                 } else {
@@ -129,13 +120,11 @@ class TelaCriacaoViewModel : ViewModel() {
 
                 val rotinaFinal = rotina.copy(idRotina = idFinal)
 
-                // Evita reutilizar IDs de atividades já existentes no banco.
                 var proximoIdAtividade =
                     (atividadeDAO.buscarTodas()
                         .maxOfOrNull { it.idAtividade } ?: 0) + 1
 
-                // Grava todas as atividades vinculadas à rotina correta.
-                atividades.forEach { atividade ->
+                currentState.atividades.forEach { atividade ->
                     val atividadeSalva = atividade.copy(
                         idAtividade = proximoIdAtividade++,
                         idRotina = idFinal
@@ -147,7 +136,6 @@ class TelaCriacaoViewModel : ViewModel() {
                 rotinaFinal
             }
 
-            // Atualiza as listas em memória após salvar no banco.
             val indice = listaRotinas.indexOfFirst {
                 it.idRotina == rotinaSalva.idRotina
             }
@@ -162,7 +150,6 @@ class TelaCriacaoViewModel : ViewModel() {
                 it.idRotina == rotinaSalva.idRotina
             }
 
-            // Recarrega as atividades com os IDs que foram gravados no banco.
             val atividadesSalvas = withContext(Dispatchers.IO) {
                 BancoDadosProvider.db.atividadeDAO()
                     .buscarPorRotina(rotinaSalva.idRotina)
@@ -170,7 +157,7 @@ class TelaCriacaoViewModel : ViewModel() {
 
             listaAtividades.addAll(atividadesSalvas)
 
-            idRotinaEditando = rotinaSalva.idRotina
+            _uiState.update { it.copy(idRotinaEditando = rotinaSalva.idRotina) }
 
             rotinaSalva
         } catch (e: Exception) {
@@ -197,11 +184,13 @@ class TelaCriacaoViewModel : ViewModel() {
 
                 val rotina = resultado.first ?: return@launch
 
-                idRotinaEditando = id
-                nomeRotina.value = rotina.nomeRotina
-
-                atividades.clear()
-                atividades.addAll(resultado.second)
+                _uiState.update {
+                    it.copy(
+                        idRotinaEditando = id,
+                        nomeRotina = rotina.nomeRotina,
+                        atividades = resultado.second
+                    )
+                }
             } catch (e: Exception) {
                 Log.e("TelaCriacaoViewModel", "Erro ao carregar rotina", e)
             }
@@ -218,7 +207,7 @@ class TelaCriacaoViewModel : ViewModel() {
         }
     }
 
-    suspend fun excluirRotinaDoBanco(idRotina: Int) {
+    private suspend fun excluirRotinaDoBanco(idRotina: Int) {
         withContext(Dispatchers.IO) {
             val db = BancoDadosProvider.db
 

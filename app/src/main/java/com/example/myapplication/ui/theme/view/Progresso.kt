@@ -2,17 +2,7 @@ package com.example.myapplication.ui.theme.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,21 +10,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,17 +21,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.myapplication.navigation.RotaAbas
-import com.example.myapplication.model.calcularNivel
-import com.example.myapplication.model.calcularXp
-import com.example.myapplication.model.calcularXpNoNivel
-
-// TELA DE PROGRESSO
+import com.example.myapplication.viewModel.ProgressoViewModel
+import com.example.myapplication.viewmodel.uistate.ProgressoUiState
 
 @Composable
-fun Progresso(navController: NavHostController) {
+fun Progresso(
+    navController: NavHostController,
+    viewModel: ProgressoViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -60,13 +40,9 @@ fun Progresso(navController: NavHostController) {
             .background(Color(0xFFF3EFE0))
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp),
-
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "Seu progresso",
@@ -75,82 +51,48 @@ fun Progresso(navController: NavHostController) {
             color = Color(0xFF1E1E1E)
         )
 
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
+        Spacer(modifier = Modifier.height(20.dp))
 
-        CardNivel()
+        CardNivel(uiState)
 
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         CardMetricas()
 
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
-
-        // CardAtividadeGrid()
-
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         CardMetasHistorico(navController)
 
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         CardDesempenho(navController)
     }
 }
 
 @Composable
-fun CardDesempenho(
-    navController: NavHostController
-) {
-
+fun CardDesempenho(navController: NavHostController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                navController.navigate(RotaAbas.TelaDesempenho)
-            },
-
+            .clickable { navController.navigate(RotaAbas.TelaDesempenho) },
         shape = RoundedCornerShape(20.dp),
-
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF388E3C)
-        )
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF388E3C))
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp),
-
             verticalAlignment = Alignment.CenterVertically,
-
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "Meu desempenho",
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
-
-                Spacer(
-                    modifier = Modifier.height(6.dp)
-                )
-
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = "Veja como suas rotinas estão evoluindo.",
                     color = Color.White.copy(alpha = 0.9f),
@@ -168,93 +110,57 @@ fun CardDesempenho(
     }
 }
 
-
-// ============================================================
-// CARD NÍVEL
-// ============================================================
-
 @Composable
-fun CardNivel() {
-
-    val xp = calcularXp()
-    val nivel = calcularNivel()
-    val xpNoNivel = calcularXpNoNivel()
-
-    val progresso = xpNoNivel / 100f
-
+fun CardNivel(uiState: ProgressoUiState) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = Color.White
     ) {
-
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     color = Color(0xFFFFF3E0),
                     modifier = Modifier.size(44.dp)
                 ) {
-
-                    Box(
-                        contentAlignment = Alignment.Center
-                    ) {
-
-                        Text(
-                            text = "🔥",
-                            fontSize = 20.sp
-                        )
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(text = "🔥", fontSize = 20.sp)
                     }
                 }
 
-                Spacer(
-                    modifier = Modifier.width(12.dp)
-                )
+                Spacer(modifier = Modifier.width(12.dp))
 
                 Column {
-
                     Text(
-                        text = "Nível $nivel",
+                        text = "Nível ${uiState.nivel}",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
-
                     Text(
-                        text = "$xp XP acumulado",
+                        text = "${uiState.xpAcumulado} XP acumulado",
                         fontSize = 12.sp,
                         color = Color.Gray
                     )
                 }
             }
 
-            Spacer(
-                modifier = Modifier.height(16.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             LinearProgressIndicator(
-                progress = { progresso },
-
+                progress = { uiState.progressoIndicator },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(10.dp)
                     .clip(CircleShape),
-
                 color = Color(0xFF4CAF50),
                 trackColor = Color(0xFFE0E0E0)
             )
 
-            Spacer(
-                modifier = Modifier.height(6.dp)
-            )
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
-                text = "$xpNoNivel / 100 XP",
+                text = "${uiState.xpNoNivel} / 100 XP",
                 fontSize = 12.sp,
                 color = Color.Gray
             )
@@ -262,35 +168,23 @@ fun CardNivel() {
     }
 }
 
-
-// ============================================================
-// CARD MÉTRICAS
-// ============================================================
-
 @Composable
 fun CardMetricas() {
-
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = Color.White
     ) {
-
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Surface(
                 shape = RoundedCornerShape(12.dp),
                 color = Color(0xFFE3F2FD),
                 modifier = Modifier.size(44.dp)
             ) {
-
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-
+                Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
                         contentDescription = null,
@@ -299,9 +193,7 @@ fun CardMetricas() {
                 }
             }
 
-            Spacer(
-                modifier = Modifier.width(16.dp)
-            )
+            Spacer(modifier = Modifier.width(16.dp))
 
             Text(
                 text = "Acompanhe suas métricas",
@@ -312,257 +204,14 @@ fun CardMetricas() {
     }
 }
 
-
-// ============================================================
-// CARD ATIVIDADE
-// ============================================================
-
 @Composable
-fun CardAtividadeGrid() {
-
+fun CardMetasHistorico(navController: NavHostController) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = Color.White
     ) {
-
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-
-            Text(
-                text = "ATIVIDADE — ÚLTIMAS 10 SEMANAS",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray
-            )
-
-            Spacer(
-                modifier = Modifier.height(16.dp)
-            )
-
-            val tonsVerde = listOf(
-                Color(0xFFF0F0F0),
-                Color(0xFFC8E6C9),
-                Color(0xFF81C784),
-                Color(0xFF4CAF50),
-                Color(0xFF2E7D32)
-            )
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-
-                repeat(7) {
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                        repeat(10) {
-
-                            val nivelColor = (0..4).random()
-
-                            Box(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clip(
-                                        RoundedCornerShape(4.dp)
-                                    )
-                                    .background(
-                                        tonsVerde[nivelColor]
-                                    )
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(
-                modifier = Modifier.height(12.dp)
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Text(
-                    text = "Menos",
-                    fontSize = 11.sp,
-                    color = Color.Gray
-                )
-
-                Spacer(
-                    modifier = Modifier.width(4.dp)
-                )
-
-                tonsVerde.forEach { color ->
-
-                    Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(
-                                RoundedCornerShape(2.dp)
-                            )
-                            .background(color)
-                    )
-
-                    Spacer(
-                        modifier = Modifier.width(3.dp)
-                    )
-                }
-
-                Text(
-                    text = "Mais",
-                    fontSize = 11.sp,
-                    color = Color.Gray
-                )
-            }
-        }
-    }
-}
-
-
-// ============================================================
-// BARRA DE NAVEGAÇÃO
-// ============================================================
-
-@Composable
-fun BarraNavegacao(
-    navInterno: NavHostController
-) {
-
-    val rotaAtual =
-        navInterno.currentBackStackEntryAsState()
-            .value
-            ?.destination
-            ?.route
-
-    NavigationBar(
-        modifier = Modifier.fillMaxWidth(),
-        containerColor = Color(0xFFF3EFE0)
-    ) {
-
-        NavigationBarItem(
-            selected = rotaAtual == RotaAbas.TelaListaRotina,
-
-            onClick = {
-                navInterno.navigate(RotaAbas.TelaListaRotina) {
-                    popUpTo(RotaAbas.TelaListaRotina) {
-                        inclusive = false
-                    }
-                    launchSingleTop = true
-                }
-            },
-
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Rotinas"
-                )
-            },
-
-            label = {
-                Text("Rotinas")
-            },
-
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF4CAF50),
-                selectedTextColor = Color(0xFF4CAF50),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray,
-                indicatorColor = Color.Transparent
-            )
-        )
-
-        NavigationBarItem(
-            selected = rotaAtual == RotaAbas.Progresso,
-
-            onClick = {
-                navInterno.navigate(RotaAbas.Progresso) {
-                    popUpTo(RotaAbas.TelaListaRotina) {
-                        inclusive = false
-                    }
-                    launchSingleTop = true
-                }
-            },
-
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.List,
-                    contentDescription = "Progresso"
-                )
-            },
-
-            label = {
-                Text("Progresso")
-            },
-
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF4CAF50),
-                selectedTextColor = Color(0xFF4CAF50),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray,
-                indicatorColor = Color.Transparent
-            )
-        )
-
-        NavigationBarItem(
-            selected = rotaAtual == RotaAbas.TelaPerfil,
-
-            onClick = {
-                navInterno.navigate(RotaAbas.TelaPerfil) {
-                    popUpTo(RotaAbas.TelaListaRotina) {
-                        inclusive = false
-                    }
-                    launchSingleTop = true
-                }
-            },
-
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Perfil"
-                )
-            },
-
-            label = {
-                Text("Perfil")
-            },
-
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF4CAF50),
-                selectedTextColor = Color(0xFF4CAF50),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray,
-                indicatorColor = Color.Transparent
-            )
-        )
-    }
-}
-
-// ============================================================
-// CARD METAS E HISTÓRICO
-// ============================================================
-
-@Composable
-fun CardMetasHistorico(
-    navController: NavHostController
-) {
-
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        color = Color.White
-    ) {
-
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Acompanhe sua jornada",
                 fontSize = 17.sp,
@@ -570,9 +219,7 @@ fun CardMetasHistorico(
                 color = Color(0xFF1E1E1E)
             )
 
-            Spacer(
-                modifier = Modifier.height(6.dp)
-            )
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = "Consulte suas metas e veja seu histórico.",
@@ -580,28 +227,20 @@ fun CardMetasHistorico(
                 color = Color.Gray
             )
 
-            Spacer(
-                modifier = Modifier.height(16.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-
                 Button(
-                    onClick = {
-                        navController.navigate(RotaAbas.TelaMetas)
-                    },
+                    onClick = { navController.navigate(RotaAbas.TelaMetas) },
                     modifier = Modifier
                         .weight(1f)
                         .height(52.dp),
                     shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE8F5E9)
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8F5E9))
                 ) {
-
                     Text(
                         text = "Metas",
                         color = Color(0xFF388E3C),
@@ -610,18 +249,13 @@ fun CardMetasHistorico(
                 }
 
                 Button(
-                    onClick = {
-                        navController.navigate(RotaAbas.TelaHistorico)
-                    },
+                    onClick = { navController.navigate(RotaAbas.TelaHistorico) },
                     modifier = Modifier
                         .weight(1f)
                         .height(52.dp),
                     shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE3F2FD)
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE3F2FD))
                 ) {
-
                     Text(
                         text = "Histórico",
                         color = Color(0xFF1976D2),

@@ -1,93 +1,48 @@
 package com.example.myapplication.viewModel
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.model.Atividade
 import com.example.myapplication.model.Rotina
-import com.example.myapplication.model.calcularNivel
-import com.example.myapplication.model.calcularXp
-import com.example.myapplication.model.calcularXpNoNivel
-import com.example.myapplication.model.listaAtividades
+import com.example.myapplication.model.Atividade
 import com.example.myapplication.model.listaRotinas
+import com.example.myapplication.model.listaAtividades
+import com.example.myapplication.viewmodel.uistate.TelaDesempenhoUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class DesempenhoViewModel : ViewModel() {
 
-    val rotinas = mutableStateOf<List<Rotina>>(emptyList())
-    val atividades = mutableStateOf<List<Atividade>>(emptyList())
+    private val _uiState = MutableStateFlow(TelaDesempenhoUiState())
+    val uiState: StateFlow<TelaDesempenhoUiState> = _uiState.asStateFlow()
 
     fun atualizarDados() {
+        val rotinas = listaRotinas.toList()
+        val atividades = listaAtividades.toList()
 
-        rotinas.value = listaRotinas.toList()
-        atividades.value = listaAtividades.toList()
-    }
+        val qtdRotinas = rotinas.size
+        val qtdAtividades = atividades.size
+        val tempoTotal = rotinas.sumOf { it.tempoMinutosRotina }
+        val media = if (qtdRotinas > 0) tempoTotal.toFloat() / qtdRotinas else 0f
+        val maior = rotinas.maxByOrNull { it.tempoMinutosRotina }
 
-    fun quantidadeRotinas(): Int {
-        return rotinas.value.size
-    }
-
-    fun quantidadeAtividades(): Int {
-        return atividades.value.size
-    }
-
-    fun tempoTotal(): Double {
-        return rotinas.value.sumOf { it.tempoMinutosRotina.toDouble() }
-    }
-
-    fun mediaTempoRotina(): Double {
-
-        if (rotinas.value.isEmpty()) {
-            return 0.0
-        }
-
-        return tempoTotal() / rotinas.value.size
-    }
-
-    fun maiorRotina(): Rotina? {
-
-        return rotinas.value.maxByOrNull {
-            it.tempoMinutosRotina
-        }
-    }
-
-    fun menorRotina(): Rotina? {
-
-        return rotinas.value.minByOrNull {
-            it.tempoMinutosRotina
+        _uiState.update {
+            it.copy(
+                rotinas = rotinas,
+                quantidadeRotinas = qtdRotinas,
+                quantidadeAtividades = qtdAtividades,
+                tempoTotal = tempoTotal,
+                mediaTempoRotina = media,
+                maiorRotina = maior
+            )
         }
     }
 
     fun atividadesDaRotina(idRotina: Int): List<Atividade> {
-
-        return atividades.value.filter {
-            it.idRotina == idRotina
-        }
+        return listaAtividades.filter { it.idRotina == idRotina }
     }
 
     fun percentualDaRotina(rotina: Rotina): Float {
-
-        val total = tempoTotal()
-
-        if (total <= 0) {
-            return 0f
-        }
-
-        return (rotina.tempoMinutosRotina / total).toFloat()
-    }
-
-    fun xp(): Int {
-        return calcularXp()
-    }
-
-    fun nivel(): Int {
-        return calcularNivel()
-    }
-
-    fun xpNoNivel(): Int {
-        return calcularXpNoNivel()
-    }
-
-    fun progressoNivel(): Float {
-
-        return xpNoNivel() / 100f
+        return 0.5f
     }
 }

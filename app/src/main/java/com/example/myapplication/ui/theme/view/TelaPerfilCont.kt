@@ -1,32 +1,12 @@
 package com.example.myapplication.ui.theme.view
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -42,214 +22,101 @@ fun TelaPerfilCont(
     navController: NavHostController,
     viewModel: PerfilViewModel
 ) {
-
     val begeFundo = Color(0xFFF3EFE0)
     val verde = Color(0xFF388E3C)
 
-    val perfil = viewModel.perfil.value
-
-    // Começa com os dados que já existem
-    var nome by remember(perfil.nome) {
-        mutableStateOf(perfil.nome)
-    }
-
-    var email by remember(perfil.email) {
-        mutableStateOf(perfil.email)
-    }
-
-    var salvando by remember { mutableStateOf(false) }
-
-    val erro by viewModel.erro
+    val uiState by viewModel.uiState.collectAsState()
     val contexto = LocalContext.current
 
-    LaunchedEffect(erro) {
-        if (!erro.isNullOrBlank()) {
-            Toast.makeText(
-                contexto,
-                erro,
-                Toast.LENGTH_LONG
-            ).show()
+    var nome by remember(uiState.perfil.nome) { mutableStateOf(uiState.perfil.nome) }
+    var email by remember(uiState.perfil.email) { mutableStateOf(uiState.perfil.email) }
+
+    LaunchedEffect(uiState.erro) {
+        if (!uiState.erro.isNullOrBlank()) {
+            Toast.makeText(contexto, uiState.erro, Toast.LENGTH_LONG).show()
         }
     }
 
-
     Scaffold(
         containerColor = begeFundo,
-
         topBar = {
-
             TopAppBar(
-
                 title = {
-
                     Text(
-                        text = if (perfil.nome.isBlank()) {
-                            "Fazer cadastro"
-                        } else {
-                            "Editar perfil"
-                        },
+                        text = if (uiState.perfil.nome.isBlank()) "Fazer cadastro" else "Editar perfil",
                         fontWeight = FontWeight.Bold
                     )
                 },
-
                 navigationIcon = {
-
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                        }
-                    ) {
-
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Voltar"
-                        )
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Voltar")
                     }
                 }
             )
         }
-
     ) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(20.dp)
         ) {
-
-            // =================================
-            // TÍTULO
-            // =================================
-
             Text(
-                text = if (perfil.nome.isBlank()) {
-                    "Crie seu perfil"
-                } else {
-                    "Atualize seus dados"
-                },
+                text = if (uiState.perfil.nome.isBlank()) "Crie seu perfil" else "Atualize seus dados",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = if (perfil.nome.isBlank()) {
-                    "Preencha seus dados para começar."
-                } else {
-                    "Altere seus dados quando quiser."
-                },
+                text = if (uiState.perfil.nome.isBlank()) "Preencha seus dados para começar." else "Altere seus dados quando quiser.",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
 
-            Spacer(
-                modifier = Modifier.height(28.dp)
-            )
+            Spacer(modifier = Modifier.height(28.dp))
 
-
-            // =================================
-            // NOME
-            // =================================
-
-            Text(
-                text = "Nome",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
-
+            Text(text = "Nome", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = nome,
-
-                onValueChange = {
-                    nome = it
-                },
-
+                onValueChange = { nome = it },
                 modifier = Modifier.fillMaxWidth(),
-
                 shape = RoundedCornerShape(12.dp),
-
                 singleLine = true,
-
-                placeholder = {
-                    Text("Digite seu nome")
-                }
+                placeholder = { Text("Digite seu nome") }
             )
 
+            Spacer(modifier = Modifier.height(20.dp))
 
-            Spacer(
-                modifier = Modifier.height(20.dp)
-            )
-
-
-            // =================================
-            // EMAIL
-            // =================================
-
-            Text(
-                text = "E-mail",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
-
+            Text(text = "E-mail", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = email,
-
-                onValueChange = {
-                    email = it
-                },
-
+                onValueChange = { email = it },
                 modifier = Modifier.fillMaxWidth(),
-
                 shape = RoundedCornerShape(12.dp),
-
                 singleLine = true,
-
-                placeholder = {
-                    Text("Digite seu e-mail")
-                }
+                placeholder = { Text("Digite seu e-mail") }
             )
 
+            Spacer(modifier = Modifier.height(30.dp))
 
-            Spacer(
-                modifier = Modifier.height(30.dp)
-            )
-
-
-            // =================================
-            // SALVAR
-            // =================================
             Button(
                 onClick = {
-                    viewModel.salvarPerfil(
-                        nome = nome,
-                        email = email
-                    ) {
+                    viewModel.salvarPerfil(nome = nome, email = email) {
                         navController.popBackStack()
-
                     }
                 },
-                enabled = !salvando,
+                enabled = !uiState.salvando,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = verde
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = verde)
             ) {
-                if (salvando) {
+                if (uiState.salvando) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
                         color = Color.White,
@@ -257,11 +124,7 @@ fun TelaPerfilCont(
                     )
                 } else {
                     Text(
-                        text = if (perfil.nome.isBlank()) {
-                            "Criar meu perfil"
-                        } else {
-                            "Salvar alterações"
-                        },
+                        text = if (uiState.perfil.nome.isBlank()) "Criar meu perfil" else "Salvar alterações",
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -270,4 +133,3 @@ fun TelaPerfilCont(
         }
     }
 }
-

@@ -1,30 +1,15 @@
 package com.example.myapplication.ui.theme.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,10 +26,7 @@ fun TelaPerfil(
     navController: NavHostController,
     viewModel: PerfilViewModel
 ) {
-
-    val perfil by viewModel.perfil
-
-    val carregando by viewModel.carregando
+    val uiState by viewModel.uiState.collectAsState()
 
     val begeFundo = Color(0xFFF3EFE0)
     val verde = Color(0xFF388E3C)
@@ -57,23 +39,12 @@ fun TelaPerfil(
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(20.dp))
 
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
+        Text(text = "Meu perfil", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Color.Black)
 
-        Text(
-            text = "Meu perfil",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+        Spacer(modifier = Modifier.height(30.dp))
 
-        Spacer(
-            modifier = Modifier.height(30.dp)
-        )
-
-        // FOTO / ÍCONE
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -81,7 +52,6 @@ fun TelaPerfil(
                 .background(verde),
             contentAlignment = Alignment.Center
         ) {
-
             Icon(
                 imageVector = Icons.Default.Person,
                 contentDescription = "Perfil",
@@ -90,225 +60,94 @@ fun TelaPerfil(
             )
         }
 
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
+        Spacer(modifier = Modifier.height(20.dp))
 
-        // =========================================
-        // USUÁRIO SEM CADASTRO
-        // =========================================
+        if (uiState.carregando) {
+            CircularProgressIndicator(color = verde)
+        } else if (uiState.perfil.nome.isBlank()) {
+            Text(text = "Ainda não possui um cadastro?", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
 
-        if (carregando) {
-            CircularProgressIndicator(
-                color = verde
-            )
-        } else if (!viewModel.possuiCadastro()) {
-            // Mantenha aqui seu conteúdo atual
-            // para quem ainda não possui cadastro.
-
-            Text(
-                text = "Ainda não possui um cadastro?",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "Faça seu registro para personalizar seu perfil e acompanhar melhor sua rotina.",
                 fontSize = 14.sp,
                 color = verdeClaro,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(
-                modifier = Modifier.height(24.dp)
-            )
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = {
-                    navController.navigate(RotaAbas.TelaPerfilCont)
-                },
-
+                onClick = { navController.navigate(RotaAbas.TelaPerfilCont) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-
                 shape = RoundedCornerShape(16.dp),
-
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = verde
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = verde)
             ) {
-
-                Text(
-                    text = "Fazer meu cadastro",
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Text(text = "Fazer meu cadastro", fontSize = 17.sp, fontWeight = FontWeight.Bold)
             }
-
         } else {
+            Text(text = "Olá, ${uiState.perfil.nome}!", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black)
 
-            // =========================================
-            // USUÁRIO CADASTRADO
-            // =========================================
+            Spacer(modifier = Modifier.height(6.dp))
 
-            Text(
-                text = "Olá, ${perfil.nome}!",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
+            Text(text = "Seu perfil está pronto.", fontSize = 14.sp, color = verdeClaro)
 
-            Spacer(
-                modifier = Modifier.height(6.dp)
-            )
+            Spacer(modifier = Modifier.height(30.dp))
 
-            Text(
-                text = "Seu perfil está pronto.",
-                fontSize = 14.sp,
-                color = verdeClaro
-            )
-
-            Spacer(
-                modifier = Modifier.height(30.dp)
-            )
-
-            // CARD DE INFORMAÇÕES
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White
-                )
+                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text(text = "Informações", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black)
 
-                Column(
-                    modifier = Modifier.padding(20.dp)
-                ) {
+                    Spacer(modifier = Modifier.height(18.dp))
 
-                    Text(
-                        text = "Informações",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-
-                    Spacer(
-                        modifier = Modifier.height(18.dp)
-                    )
-
-                    // NOME
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            tint = verde,
-                            modifier = Modifier.size(24.dp)
-                        )
-
-                        Spacer(
-                            modifier = Modifier.size(12.dp)
-                        )
-
+                        Icon(imageVector = Icons.Default.Person, contentDescription = null, tint = verde, modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.size(12.dp))
                         Column {
-
-                            Text(
-                                text = "Nome",
-                                fontSize = 12.sp,
-                                color = Color.Gray
-                            )
-
-                            Text(
-                                text = perfil.nome,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Text(text = "Nome", fontSize = 12.sp, color = Color.Gray)
+                            Text(text = uiState.perfil.nome, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                         }
                     }
 
-                    Spacer(
-                        modifier = Modifier.height(18.dp)
-                    )
+                    Spacer(modifier = Modifier.height(18.dp))
 
-                    // EMAIL
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
-                        Icon(
-                            imageVector = Icons.Default.Email,
-                            contentDescription = null,
-                            tint = verde,
-                            modifier = Modifier.size(24.dp)
-                        )
-
-                        Spacer(
-                            modifier = Modifier.size(12.dp)
-                        )
-
+                        Icon(imageVector = Icons.Default.Email, contentDescription = null, tint = verde, modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.size(12.dp))
                         Column {
-
-                            Text(
-                                text = "E-mail",
-                                fontSize = 12.sp,
-                                color = Color.Gray
-                            )
-
-                            Text(
-                                text = perfil.email,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Text(text = "E-mail", fontSize = 12.sp, color = Color.Gray)
+                            Text(text = uiState.perfil.email, fontSize = 16.sp, fontWeight = FontWeight.Medium)
                         }
                     }
                 }
             }
 
-            Spacer(
-                modifier = Modifier.height(24.dp)
-            )
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // EDITAR PERFIL
             Button(
-                onClick = {
-                    navController.navigate(RotaAbas.TelaPerfilCont)
-                },
-
+                onClick = { navController.navigate(RotaAbas.TelaPerfilCont) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-
                 shape = RoundedCornerShape(16.dp),
-
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = verde
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = verde)
             ) {
-
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = null
-                )
-
-                Spacer(
-                    modifier = Modifier.size(8.dp)
-                )
-
-                Text(
-                    text = "Editar perfil",
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                Spacer(modifier = Modifier.size(8.dp))
+                Text(text = "Editar perfil", fontSize = 17.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
