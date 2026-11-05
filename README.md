@@ -25,6 +25,9 @@ A demonstração apresenta o aplicativo e suas funcionalidades. Recomenda-se com
 ## Tecnologias utilizadas
 
 - Kotlin
+- Lifecycle
+- ViewModel
+- Flow
 - Jetpack Compose
 - Material 3
 - Navigation Compose
