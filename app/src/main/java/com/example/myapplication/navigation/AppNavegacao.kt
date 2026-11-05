@@ -31,8 +31,8 @@ import com.example.myapplication.ui.theme.view.TelaMetas
 import com.example.myapplication.ui.theme.view.TelaPerfil
 import com.example.myapplication.ui.theme.view.TelaPerfilCont
 import com.example.myapplication.ui.theme.view.TelaRotina
-import com.example.myapplication.viewModel.PerfilViewModel
-import com.example.myapplication.viewModel.TelaCriacaoViewModel
+import com.example.myapplication.viewmodel.PerfilViewModel
+import com.example.myapplication.viewmodel.TelaCriacaoViewModel
 
 // ============================================================
 // NAVEGAÇÃO PRINCIPAL

@@ -1,7 +1,6 @@
-package com.example.myapplication.viewModel
+package com.example.myapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.model.Historico
 import com.example.myapplication.model.listaMetas
 import com.example.myapplication.model.listaRotinas
 import com.example.myapplication.viewmodel.uistate.TelaHistoricoUiState

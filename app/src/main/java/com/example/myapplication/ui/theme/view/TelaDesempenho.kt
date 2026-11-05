@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.myapplication.viewModel.DesempenhoViewModel
+import com.example.myapplication.viewmodel.DesempenhoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

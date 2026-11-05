@@ -1,4 +1,4 @@
-package com.example.myapplication.viewModel
+package com.example.myapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.model.Meta

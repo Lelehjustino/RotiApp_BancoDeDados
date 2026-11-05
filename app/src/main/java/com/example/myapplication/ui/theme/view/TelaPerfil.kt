@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.myapplication.viewModel.PerfilViewModel
+import com.example.myapplication.viewmodel.PerfilViewModel
 import com.example.myapplication.navigation.RotaAbas
 
 @Composable
